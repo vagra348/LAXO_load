@@ -1,5 +1,6 @@
 from locust import HttpUser, task, between
-import test_data
+#from locust.exception import RescheduleTask
+import config
 import random as rnd
 
 orders_id_list = []
@@ -14,7 +15,7 @@ class User_admin(HttpUser):
     headers = {'Content-Type': 'application/json', 'Origin': 'https://loadtest.laxo.one',
                'Referer': 'https://loadtest.laxo.one/'}
     login_index = 0
-    login_value = test_data.TestData.users_logins[login_index]
+    login_value = config.TestData.users_logins[login_index]
 
     def on_start(self):
         self.login()
@@ -27,10 +28,15 @@ class User_admin(HttpUser):
             if response.status_code == 200:
                 self.sid_value = response.json()[1].get('response').get('sid')
                 if self.sid_value != 'null':
+                    config.logger.debug(f"Success login" + " User " + str(self.login_index))
                     response.success()
                 else:
                     response.failure(f'sid is null')
+            elif response.status_code == 401:
+                config.logger.debug(f"LOGIN RECURSION" + " User " + str(self.login_index))
+                self.login()
             else:
+                config.logger.debug(f"FAILED SERVER" + " User " + str(self.login_index))
                 response.failure(f'server status code is {response.status_code}')
 
     @task(2)
@@ -54,10 +60,13 @@ class User_admin(HttpUser):
                 response_code_2 = response.json()[1].get('code')
                 if response_code_1 == 200 and response_code_2 == 200:
                     orders_id_list.append(response.json()[0].get('response'))
+                    config.logger.debug(f"Success order add" + " User " + str(self.login_index))
                     response.success()
                 else:
+                    config.logger.debug(f"FAILED ORDER ADD" + " User " + str(self.login_index))
                     response.failure(f'response status codes are {response_code_1, response_code_2}')
             else:
+                config.logger.debug(f"FAILED SERVER" + " User " + str(self.login_index))
                 response.failure(f'server status code is {response.status_code}')
 
     @task(7)
@@ -78,10 +87,13 @@ class User_admin(HttpUser):
                 response_code_1 = response.json()[0].get('code')
                 response_code_2 = response.json()[1].get('code')
                 if response_code_1 == 200 and response_code_2 == 200:
+                    config.logger.debug(f"Success order read" + " User " + str(self.login_index))
                     response.success()
                 else:
+                    config.logger.debug(f"FAILED ORDER READ" + " User " + str(self.login_index))
                     response.failure(f'response status codes are {response_code_1, response_code_2}')
             else:
+                config.logger.debug(f"FAILED SERVER" + " User " + str(self.login_index))
                 response.failure(f'server status code is {response.status_code}')
 
     @task(1)
@@ -186,10 +198,13 @@ class User_admin(HttpUser):
                 response_code_2 = response.json()[1].get('code')
                 if response_code_1 == 200 and response_code_2 == 200:
                     contacts_id_list.append(response.json()[0].get('response'))
+                    config.logger.debug(f"Success contact add" + " User " + str(self.login_index))
                     response.success()
                 else:
+                    config.logger.debug(f"FAILED CONTACT ADD" + " User " + str(self.login_index))
                     response.failure(f'response status codes are {response_code_1, response_code_2}')
             else:
+                config.logger.debug(f"FAILED SERVER" + " User " + str(self.login_index))
                 response.failure(f'server status code is {response.status_code}')
 
     @task(4)
@@ -210,10 +225,13 @@ class User_admin(HttpUser):
                 response_code_1 = response.json()[0].get('code')
                 response_code_2 = response.json()[1].get('code')
                 if response_code_1 == 200 and response_code_2 == 200:
+                    config.logger.debug(f"Success contact read" + " User " + str(self.login_index))
                     response.success()
                 else:
+                    config.logger.debug(f"FAILED CONTACT READ" + " User " + str(self.login_index))
                     response.failure(f'response status codes are {response_code_1, response_code_2}')
             else:
+                config.logger.debug(f"FAILED SERVER" + " User " + str(self.login_index))
                 response.failure(f'server status code is {response.status_code}')
 
 

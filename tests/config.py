@@ -1,3 +1,18 @@
+import logging
+
+
+class LogConfig():
+    logger = logging.getLogger('demo_logger')
+    logger.setLevel('DEBUG')
+    file = logging.FileHandler(filename='test_logs.log')
+    file.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s'))
+    logger.addHandler(file)
+    logger.propagate = False
+
+
+logger = LogConfig().logger
+
+
 class TestData():
     users_logins = ['vagra348@gmail.com',
                     'vagra348+1@gmail.com',
