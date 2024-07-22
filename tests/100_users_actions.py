@@ -1,4 +1,4 @@
-from locust import HttpUser, task, between, TaskSet
+from locust import HttpUser, task, between
 import test_data
 import random as rnd
 
@@ -61,6 +61,8 @@ class User_admin(HttpUser):
 
     @task(5)
     def read_order(self):
+        if len(orders_id_list) == 0:
+            return
         order_id = rnd.choice(orders_id_list)
         body = [
             {
