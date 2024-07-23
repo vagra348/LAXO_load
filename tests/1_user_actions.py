@@ -5,14 +5,14 @@ import random as rnd
 orders_id_list = []
 contacts_id_list = [1]
 
+
 class User_admin(HttpUser):
     host = "https://api.laxo.one/"
     wait_time = between(1, 2)
     sid_value = 'null'
-    fixed_count = 1
     headers = {'Content-Type': 'application/json', 'Origin': 'https://loadtest.laxo.one',
                'Referer': 'https://loadtest.laxo.one/'}
-    login_index = 0
+    login_index = 1
     login_value = config.TestData.users_logins[login_index]
 
     def on_start(self):
@@ -61,7 +61,8 @@ class User_admin(HttpUser):
                     config.logger.debug(f"Success order add" + " User " + str(self.login_index))
                     response.success()
                 else:
-                    config.logger.debug(f"FAILED ORDER ADD" + " User " + str(self.login_index))
+                    server_msg = str(response.json())
+                    config.logger.debug(f"FAILED ORDER ADD" + " User " + str(self.login_index) + server_msg)
                     response.failure(f'response status codes are {response_code_1, response_code_2}')
             else:
                 config.logger.debug(f"FAILED SERVER" + " User " + str(self.login_index))
